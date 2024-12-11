@@ -3,18 +3,18 @@ namespace App\Service;
 
 function matchSolver($player1, $player2, $iteration) {
     if ($player1->getCurrentAttack == true && $player2->getCurrentAttack == true) {
-        $player1->score += 3;
-        $player2->score += 3;
+        $player1->SetScore += 3;
+        $player2->SetScore += 3;
     } 
     else if ($player1->getCurrentAttack == false && $player2->getCurrentAttack == false) {
-        $player1->score += 1;
-        $player2->score += 1;
+        $player1->SetScore += 1;
+        $player2->SetScore += 1;
     } 
     else {
         if ( $player1->getCurrentAttack == false ) {
-            $player1->score += 5;
+            $player1->SetScore += 5;
         } else {
-            $player2->score += 5;
+            $player2->SetScore += 5;
         }
     }
 
