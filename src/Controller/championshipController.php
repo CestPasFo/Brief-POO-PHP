@@ -1,78 +1,120 @@
 <?php
 namespace App\Controller;
+
 use App\Service\MatchSolverService;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
+use App\Entity\Player;
+use App\Entity\PlayerAlwaysBetray;
+use App\Entity\PlayerAlwaysCooperate;
+use App\Entity\PlayerCopyCat;
+use App\Entity\PlayerRandomBullshitGo;
 
-$matchSolver = new MatchSolverService();
+class championshipController extends AbstractController
+{
+    private $matchSolver;
+    private $allTypes = [];
+    private $allPlayers = [];
+    private $sumCooperates = 0;
+    private $sumCheats = 0;
+    private $scoresByStrategy = [];
+    private $playerTypesCount = [];
+    private $averageScoresByStrategy = [];
+    private $matches = [];
 
-$allTypes = [];
-$allPlayers = [];
+    public function __construct(MatchSolverService $matchSolver)
+    {
+        $this->matchSolver = $matchSolver;
+    }
 
-$sumCooperates;
-$sumCheats;
-$scoresByStrategy = []; // Keep this for later can be handy for other stats
-$playerTypesCount = []; // Stores the amount of each type: [string TypeName => int amount]
-$averageScoresByStrategy = [];
+    #[Route('/tournament', name: 'tournament')]
+    public function index(): Response
+    {
+        $this->getAllInheriteds(Player::class);
+        $this->championship();
+        $this->setStats();
 
-function getAllInheriteds($base) {
-    foreach(get_declared_classes() as $class) {
-        if (is_subclass_of($class, $base)) {
-            array_push($allTypes, $base);
+        return $this->render('championship/index.html.twig', [
+            'players' => $this->allPlayers,
+            'scoresByStrategy' => $this->scoresByStrategy,
+            'averageScoresByStrategy' => $this->averageScoresByStrategy,
+            'matches' => $this->matches,
+            'sumCooperates' => $this->sumCooperates,
+            'sumCheats' => $this->sumCheats
+        ]);              
+    }
+
+    private function getAllInheriteds($base)
+    {
+        $this->allTypes = [
+            PlayerAlwaysBetray::class,
+            PlayerAlwaysCooperate::class,
+            PlayerCopyCat::class,
+            PlayerRandomBullshitGo::class
+        ];
+    }
+
+    private function championship()
+    {
+        foreach($this->allTypes as $class) {
+            $this->allPlayers[] = new $class();
         }
-    }
-}
 
-getAllInheriteds($Player);
+        for ($iteration = 0; $iteration < 10; $iteration++) {
+            for ($i = 0; $i < count($this->allPlayers); $i++) {
+                for ($j = $i + 1; $j < count($this->allPlayers); $j++) {
+                    $this->allPlayers[$i]->attack();
+                    $this->allPlayers[$j]->attack();
 
-function championship () {
-    global $allTypes, $matchSolver;
-    
-    foreach($allTypes as $class) {
-        array_push($allPlayers, new $class);
-    }
-
-    $iteration = 0;
-
-    do {
-        for ($i = 0; $i < count($allPlayers); $i++) {
-            for ($j = $i + 1; $j < count($allPlayers); $j++) {
-
-                $allPlayers[$i]->attack();
-                $allPlayers[$j]->attack();
-
-                $matchSolver->matchSolver($allPlayers[$i], $allPlayers[$j], $iteration);
-                
+                    $this->matchSolver->matchSolver($this->allPlayers[$i], $this->allPlayers[$j], $iteration);
+                    
+                    $this->matches[] = [
+                        'player1' => get_class($this->allPlayers[$i]),
+                        'player2' => get_class($this->allPlayers[$j]),
+                        'result' => [
+                            'player1Score' => $this->allPlayers[$i]->getScore(),
+                            'player2Score' => $this->allPlayers[$j]->getScore()
+                        ],
+                        'iteration' => $iteration
+                    ];                    
+                }
             }
         }
-    } while ($iteration < 10);
-}
-
-function setStats () {
-    global $allPlayers, $sumCooperates, $sumCheats, $scoresByStrategy, $playerTypesCount, $averageScoresByStrategy;
-
-    foreach ($allPlayers as $player) {
-        $last_score = null; // As we store the CURRENT score, we need to take away last round's score
-
-        foreach ($player->getHistory() as $round) {
-            $toAdd = $round["score"];
-            if ($last_score !== null) { $toAdd -= $last_score; }
-            
-            $round["choice"] ? $sumCooperates += $toAdd : $sumCheats += $toAdd;
-
-            $last_score = $round["score"];
-        }
-
-        $className = $player;
-        if (isset($scoresByStrategy[$className])) { // Shouldn't need to check for $playerTypes
-            $scoresByStrategy[$className] += $player->getScore();
-            $playerTypesCount[$className] += 1;
-        } else {
-            $scoresByStrategy[$className] = $player->getScore();
-            $playerTypesCount[$className] = 1;
-        }
     }
-    
-    
-    foreach ($scoresByStrategy as $playerType => $score) {
-        $averageScoresByStrategy[$playerType] = $score / $playerTypesCount[$playerType];
+
+    private function setStats()
+    {
+        foreach ($this->allPlayers as $player) {
+            $last_score = null;
+
+            foreach ($player->getHistory() as $round) {
+                $toAdd = $round["score"];
+                if ($last_score !== null) {
+                    $toAdd -= $last_score;
+                }
+                
+                if ($round["choice"]) {
+                    $this->sumCooperates += $toAdd;
+                } else {
+                    $this->sumCheats += $toAdd;
+                }
+
+                $last_score = $round["score"];
+            }
+
+            $className = get_class($player);
+            if (isset($this->scoresByStrategy[$className])) {
+                $this->scoresByStrategy[$className] += $player->getScore();
+                $this->playerTypesCount[$className] += 1;
+            } else {
+                $this->scoresByStrategy[$className] = $player->getScore();
+                $this->playerTypesCount[$className] = 1;
+            }
+        }
+        
+        foreach ($this->scoresByStrategy as $playerType => $score) {
+            $this->averageScoresByStrategy[$playerType] = $score / $this->playerTypesCount[$playerType];
+        }
     }
 }
