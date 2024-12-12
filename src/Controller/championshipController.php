@@ -5,6 +5,12 @@ use Service\matchSolver;
 $allTypes = [];
 $allPlayers = [];
 
+$sumCooperates;
+$sumCheats;
+$scoresByStrategy = []; // Keep this for later can be handy for other stats
+$playerTypesCount = []; // Stores the amount of each type: [string TypeName => int amount]
+$averageScoresByStrategy = [];
+
 function getAllInheriteds($base) {
     foreach(get_declared_classes() as $class) {
         if (is_subclass_of($class, $base)) {
@@ -37,12 +43,30 @@ do {
 }
 
 function setStats () {
-    $sumCooperates;
-    $sumCheats;
+    foreach ($allPlayers as $player) {
+        $last_score = null; // As we store the CURRENT score, we need to take away last round's score
 
-    //logic to be added to set the values ;)
+        foreach ($player->getHistory() as $round) {
+            $toAdd = $round["score"];
+            if ($last_score !== null) { $toAdd -= $last_score; }
+            
+            $round["choice"] ? $sumCooperates += $toAdd : $sumCheats += $toAdd;
 
-    $averageScoresByStrategy;
+            $last_score = $round["score"];
+        }
 
-
+        $className = $player;
+        if (isset($scoresByStrategy[$className])) { // Shouldn't need to check for $playerTypes
+            $scoresByStrategy[$className] += $player->getScore();
+            $playerTypesCount[$className] += 1;
+        } else {
+            $scoresByStrategy[$className] = $player->getScore();
+            $playerTypesCount[$className] = 1;
+        }
+    }
+    
+    
+    foreach ($scoresByStrategy as $playerType => $score) {
+        $averageScoresByStrategy[$playerType] = $score / $playerTypesCount[$playerType];
+    }
 }
