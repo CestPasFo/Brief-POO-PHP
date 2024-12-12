@@ -1,6 +1,8 @@
 <?php
 namespace App\Controller;
-use Service\matchSolver;
+use App\Service\MatchSolverService;
+
+$matchSolver = new MatchSolverService();
 
 $allTypes = [];
 $allPlayers = [];
@@ -22,27 +24,31 @@ function getAllInheriteds($base) {
 getAllInheriteds($Player);
 
 function championship () {
+    global $allTypes, $matchSolver;
+    
     foreach($allTypes as $class) {
-    array_push($allPlayers, new $class);
-}
-
-$iteration = 0;
-
-do {
-    for ($i = 0; $i < count($allPlayers); $i++) {
-        for ($j = $i + 1; $j < count($allPlayers); $j++) {
-
-            $allPlayers[$i]->attack();
-            $allPlayers[$j]->attack();
-
-            matchSolver($allPlayers[$i], $allPlayers[$j], $iteration);
-             
-        }
+        array_push($allPlayers, new $class);
     }
-} while ($iteration < 10);
+
+    $iteration = 0;
+
+    do {
+        for ($i = 0; $i < count($allPlayers); $i++) {
+            for ($j = $i + 1; $j < count($allPlayers); $j++) {
+
+                $allPlayers[$i]->attack();
+                $allPlayers[$j]->attack();
+
+                $matchSolver->matchSolver($allPlayers[$i], $allPlayers[$j], $iteration);
+                
+            }
+        }
+    } while ($iteration < 10);
 }
 
 function setStats () {
+    global $allPlayers, $sumCooperates, $sumCheats, $scoresByStrategy, $playerTypesCount, $averageScoresByStrategy;
+
     foreach ($allPlayers as $player) {
         $last_score = null; // As we store the CURRENT score, we need to take away last round's score
 
