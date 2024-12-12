@@ -19,8 +19,16 @@ abstract class Player {
         return $this->history;
     }
 
-    public function push(array $entry) {
-        array_push($history, $entry);
+    public function push(int $turn, bool $choice, bool $opponentChoice, int $score) {
+        array_push(
+            $this->history,
+            [
+                "turn" => $turn,
+                "choice" => $choice,
+                "opponentChoice" => $opponentChoice,
+                "score" => $score
+            ]
+        );
     }
 
     public function getScore() {
