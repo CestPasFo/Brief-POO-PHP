@@ -3,27 +3,32 @@ namespace App\Service;
 
 function matchSolver($player1, $player2, $iteration) {
     if ($player1->getCurrentAttack() == true && $player2->getCurrentAttack() == true) {
-        $player1->SetScore += 3;
-        $player2->SetScore += 3;
+        $player1->setScore(3 + $player1->getScore());
+        $player2->setScore(3 + $player2->getScore());
     } 
     else if ($player1->getCurrentAttack() == false && $player2->getCurrentAttack() == false) {
-        $player1->SetScore += 1;
-        $player2->SetScore += 1;
+        $player1->setScore(1 + $player1->getScore());
+        $player2->setScore(1 + $player2->getScore());
     } 
     else {
         if ( $player1->getCurrentAttack() == false ) {
-            $player1->SetScore += 5;
+            $player1->setScore(5 + $player1->getScore());
         } else {
-            $player2->SetScore += 5;
+            $player2->setScore(5 + $player2->getScore());
         }
     }
 
-    $player1->push(array("turn"=>$iteration ,
-                         "choice"=>$player1->getCurrentAttack(),
-                         "opponentchoice"=>$player2->getCurrentAttack(),
-                         "score"=>$player1->GetScore() ));
-    $player2->push(array("turn"=>$iteration ,
-                         "choice"=>$player2->getCurrentAttack,
-                         "opponentchoice"=>$player1->getCurrentAttack(),
-                         "score"=>$player2->GetScore() ));
+    $player1->push(
+        $iteration,
+        $player1->getCurrentAttack(),
+        $player2->getCurrentAttack(),
+        $player1->getScore()
+    );
+
+    $player2->push(
+        $iteration,
+        $player2->getCurrentAttack(),
+        $player1->getCurrentAttack(),
+        $player2->GetScore()
+    );
 }
