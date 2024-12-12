@@ -18,12 +18,17 @@ function matchSolver($player1, $player2, $iteration) {
         }
     }
 
-    $player1->push(array("turn"=>$iteration ,
-                         "choice"=>$player1->getCurrentAttack(),
-                         "opponentchoice"=>$player2->getCurrentAttack(),
-                         "score"=>$player1->GetScore() ));
-    $player2->push(array("turn"=>$iteration ,
-                         "choice"=>$player2->getCurrentAttack,
-                         "opponentchoice"=>$player1->getCurrentAttack(),
-                         "score"=>$player2->GetScore() ));
+    $player1->push(
+        $iteration,
+        $player1->getCurrentAttack(),
+        $player2->getCurrentAttack(),
+        $player1->getScore()
+    );
+
+    $player2->push(
+        $iteration,
+        $player2->getCurrentAttack(),
+        $player1->getCurrentAttack(),
+        $player2->GetScore()
+    );
 }
