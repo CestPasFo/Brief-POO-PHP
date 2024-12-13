@@ -10,6 +10,8 @@ use App\Entity\PlayerAlwaysBetray;
 use App\Entity\PlayerAlwaysCooperate;
 use App\Entity\PlayerCopyCat;
 use App\Entity\PlayerRandomBullshitGo;
+use App\Entity\PlayerGrudge;
+use App\Entity\PlayerDetective;
 
 class championshipController extends AbstractController
 {
@@ -55,7 +57,9 @@ class championshipController extends AbstractController
             PlayerAlwaysBetray::class,
             PlayerAlwaysCooperate::class,
             PlayerCopyCat::class,
-            PlayerRandomBullshitGo::class
+            PlayerRandomBullshitGo::class,
+            PlayerGrudge::class,
+            PlayerDetective::class
         ];
     }
 
