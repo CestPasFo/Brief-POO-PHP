@@ -68,8 +68,12 @@ class championshipController extends AbstractController
         
         for ($i = 0; $i < count($this->allPlayers); $i++) {
             for ($j = $i + 1; $j < count($this->allPlayers); $j++) {
+                $p1LastMatchScore = $this->allPlayers[$i]->getScore();
+                $p2LastMatchScore = $this->allPlayers[$j]->getScore();
+
                 // Begin match
                 for ($iteration = 0; $iteration < $this->roundCount; $iteration++) {
+                    // TODO: Match solver prevents having one clean foreach. Find a workaround.
                     $this->allPlayers[$i]->attack();
                     $this->allPlayers[$j]->attack();
 
@@ -99,23 +103,27 @@ class championshipController extends AbstractController
                         'iteration' => $iteration
                     ];
                 }
+
+                foreach ([$this->allPlayers[$i], $this->allPlayers[$j]] as $player) {
+                    // Counting, sadly, has to be done here since history needs to be reset
+                    $className = get_class($player);
+                    if (isset($this->scoresByStrategy[$className])) {
+                        $this->scoresByStrategy[$className] += $player->getScore() - $p1LastMatchScore;
+                        $this->playerTypesCount[$className] += $this->roundCount;
+                    } else {
+                        $this->scoresByStrategy[$className] = $player->getScore() - $p2LastMatchScore;
+                        $this->playerTypesCount[$className] = $this->roundCount;
+                    }
+                }
+
+                $this->allPlayers[$i]->resetHistory();
+                $this->allPlayers[$j]->resetHistory();
             }
         }
     }
 
     private function setStats()
     {
-        foreach ($this->allPlayers as $player) {
-            $className = get_class($player);
-            if (isset($this->scoresByStrategy[$className])) {
-                $this->scoresByStrategy[$className] += $player->getScore();
-                $this->playerTypesCount[$className] += count($player->getHistory());
-            } else {
-                $this->scoresByStrategy[$className] = $player->getScore();
-                $this->playerTypesCount[$className] = count($player->getHistory());
-            }
-        }
-        
         foreach ($this->scoresByStrategy as $playerType => $score) {
             $this->averageScoresByStrategy[$playerType] = $score / $this->playerTypesCount[$playerType];
         }

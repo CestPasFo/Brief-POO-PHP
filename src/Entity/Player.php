@@ -31,6 +31,10 @@ abstract class Player {
         );
     }
 
+    public function resetHistory() {
+        $this->history = [];
+    }
+
     public function getScore() {
         return $this->score;
     }
