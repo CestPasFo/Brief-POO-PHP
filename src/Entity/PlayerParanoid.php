@@ -9,6 +9,8 @@ When betrayed, betrays back.
 Randomly betays based on the average amount of betrayals of their opponent... And themselves.
 */
 class PlayerParanoid extends Player {
+    protected ?string $name = "Parano";
+    
     public function attack() {
         if (empty($this->history) || !end($this->history)["opponentChoice"]) {
             $this->currentAttack = false;

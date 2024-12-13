@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 class PlayerForgivingCopycat extends Player {
+    protected ?string $name = "Imitateur tolérent (Copykitten)";
+    
     public function attack() {
         if (count($this->history) < 2) {
             $this->currentAttack = true;

@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 class PlayerDumDum extends Player {
+    protected ?string $name = "Dum-Dum (Simplet)";
+    
     public function attack() {
         if (empty($this->history)) {
             $this->currentAttack = true;

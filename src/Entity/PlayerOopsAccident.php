@@ -9,6 +9,8 @@ Betrays when betrayed more than once during the last three turns.
 Betrays when opponent cooperated thrice in a row.
 */
 class PlayerOopsAccident extends Player {
+    protected ?string $name = "Oops~ Accident~";
+    
     public function attack() {
         if (count($this->history) < 3) {
             $this->currentAttack = true;
