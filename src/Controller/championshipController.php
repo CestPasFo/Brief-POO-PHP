@@ -10,6 +10,13 @@ use App\Entity\PlayerAlwaysBetray;
 use App\Entity\PlayerAlwaysCooperate;
 use App\Entity\PlayerCopyCat;
 use App\Entity\PlayerRandomBullshitGo;
+use App\Entity\PlayerGrudge;
+use App\Entity\PlayerDetective;
+use App\Entity\PlayerForgivingCopycat;
+use App\Entity\PlayerDumDum;
+use App\Entity\PlayerParanoid;
+use App\Entity\PlayerCashout;
+use App\Entity\PlayerOopsAccident;
 
 class championshipController extends AbstractController
 {
@@ -55,7 +62,14 @@ class championshipController extends AbstractController
             PlayerAlwaysBetray::class,
             PlayerAlwaysCooperate::class,
             PlayerCopyCat::class,
-            PlayerRandomBullshitGo::class
+            PlayerRandomBullshitGo::class,
+            PlayerGrudge::class,
+            PlayerDetective::class,
+            PlayerForgivingCopycat::class,
+            PlayerDumDum::class,
+            PlayerParanoid::class,
+            PlayerCashout::class,
+            PlayerOopsAccident::class
         ];
     }
 
@@ -104,16 +118,22 @@ class championshipController extends AbstractController
                     ];
                 }
 
-                foreach ([$this->allPlayers[$i], $this->allPlayers[$j]] as $player) {
-                    // Counting, sadly, has to be done here since history needs to be reset
-                    $className = get_class($player);
-                    if (isset($this->scoresByStrategy[$className])) {
-                        $this->scoresByStrategy[$className] += $player->getScore() - $p1LastMatchScore;
-                        $this->playerTypesCount[$className] += $this->roundCount;
-                    } else {
-                        $this->scoresByStrategy[$className] = $player->getScore() - $p2LastMatchScore;
-                        $this->playerTypesCount[$className] = $this->roundCount;
-                    }
+                $className = get_class($this->allPlayers[$i]);
+                if (isset($this->scoresByStrategy[$className])) {
+                    $this->scoresByStrategy[$className] += $this->allPlayers[$i]->getScore() - $p1LastMatchScore;
+                    $this->playerTypesCount[$className] += $this->roundCount;
+                } else {
+                    $this->scoresByStrategy[$className] = $this->allPlayers[$i]->getScore() - $p1LastMatchScore;
+                    $this->playerTypesCount[$className] = $this->roundCount;
+                }
+
+                $className = get_class($this->allPlayers[$j]);
+                if (isset($this->scoresByStrategy[$className])) {
+                    $this->scoresByStrategy[$className] += $this->allPlayers[$j]->getScore() - $p2LastMatchScore;
+                    $this->playerTypesCount[$className] += $this->roundCount;
+                } else {
+                    $this->scoresByStrategy[$className] = $this->allPlayers[$j]->getScore() - $p2LastMatchScore;
+                    $this->playerTypesCount[$className] = $this->roundCount;
                 }
 
                 $this->allPlayers[$i]->resetHistory();
