@@ -14,6 +14,7 @@ use App\Entity\PlayerGrudge;
 use App\Entity\PlayerDetective;
 use App\Entity\PlayerForgivingCopycat;
 use App\Entity\PlayerDumDum;
+use App\Entity\PlayerParanoid;
 
 class championshipController extends AbstractController
 {
@@ -63,7 +64,8 @@ class championshipController extends AbstractController
             PlayerGrudge::class,
             PlayerDetective::class,
             PlayerForgivingCopycat::class,
-            PlayerDumDum::class
+            PlayerDumDum::class,
+            PlayerParanoid::class
         ];
     }
 
