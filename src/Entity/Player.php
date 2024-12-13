@@ -6,8 +6,11 @@ abstract class Player {
     public int $score = 0;
     protected bool $currentAttack = true;
     protected array $history =  [];
+    protected ?string $name = null;
 
     public function attack() { }
+
+    public function getName() { return $this->name; }
 
     public function getCurrentAttack() : bool
     {

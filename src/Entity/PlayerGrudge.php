@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 class PlayerGrudge extends Player {
+    protected ?string $name = "Rancunnier";
+    
     public function attack() {
         if (empty($this->history)) {
             $this->currentAttack = true;

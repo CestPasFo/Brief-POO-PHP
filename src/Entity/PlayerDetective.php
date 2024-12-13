@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 class PlayerDetective extends Player {
+    protected ?string $name = "Détective";
+    
     public function attack() {
         switch (count($this->history)) {
             // Set moves

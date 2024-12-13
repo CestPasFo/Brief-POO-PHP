@@ -85,6 +85,11 @@ class championshipController extends AbstractController
                 $p1LastMatchScore = $this->allPlayers[$i]->getScore();
                 $p2LastMatchScore = $this->allPlayers[$j]->getScore();
 
+                $p1Name = $this->allPlayers[$i]->getName();
+                $p2Name = $this->allPlayers[$j]->getName();
+                $p1Name ?: $p1Name = get_class($this->allPlayers[$i]);
+                $p2Name ?: $p2Name = get_class($this->allPlayers[$j]);
+
                 // Begin match
                 for ($iteration = 0; $iteration < $this->roundCount; $iteration++) {
                     // TODO: Match solver prevents having one clean foreach. Find a workaround.
@@ -108,8 +113,10 @@ class championshipController extends AbstractController
 
                     
                     $this->matches[] = [
-                        'player1' => get_class($this->allPlayers[$i]),
-                        'player2' => get_class($this->allPlayers[$j]),
+                        'player1' => $p1Name,
+                        'player2' => $p2Name,
+                        'p1Choice' => $p1Choice ? "O" : "X",
+                        'p2Choice' => $p2Choice ? "O" : "X",
                         'result' => [
                             'player1Score' => $p1Score,
                             'player2Score' => $p2Score
@@ -118,7 +125,7 @@ class championshipController extends AbstractController
                     ];
                 }
 
-                $className = get_class($this->allPlayers[$i]);
+                $className = $p1Name;
                 if (isset($this->scoresByStrategy[$className])) {
                     $this->scoresByStrategy[$className] += $this->allPlayers[$i]->getScore() - $p1LastMatchScore;
                     $this->playerTypesCount[$className] += $this->roundCount;
@@ -127,7 +134,7 @@ class championshipController extends AbstractController
                     $this->playerTypesCount[$className] = $this->roundCount;
                 }
 
-                $className = get_class($this->allPlayers[$j]);
+                $className = $p2Name;
                 if (isset($this->scoresByStrategy[$className])) {
                     $this->scoresByStrategy[$className] += $this->allPlayers[$j]->getScore() - $p2LastMatchScore;
                     $this->playerTypesCount[$className] += $this->roundCount;
