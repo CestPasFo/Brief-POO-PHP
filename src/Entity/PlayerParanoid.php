@@ -18,10 +18,10 @@ class PlayerParanoid extends Player {
             $betrayals = 0;
 
             foreach ($this->history as $round) {
-                $betrayals += $round["opponentChoice"] + $round["choice"];
+                $round["opponentChoice"] ? $betrayals++ : 0;
             }
             
-            $this->currentAttack = rand(0, count($this->history) >= $betrayals);
+            $this->currentAttack = rand(0, count($this->history)) < $betrayals;
         }
     }
 }
