@@ -15,6 +15,7 @@ use App\Entity\PlayerDetective;
 use App\Entity\PlayerForgivingCopycat;
 use App\Entity\PlayerDumDum;
 use App\Entity\PlayerParanoid;
+use App\Entity\PlayerCashout;
 
 class championshipController extends AbstractController
 {
@@ -65,7 +66,8 @@ class championshipController extends AbstractController
             PlayerDetective::class,
             PlayerForgivingCopycat::class,
             PlayerDumDum::class,
-            PlayerParanoid::class
+            PlayerParanoid::class,
+            PlayerCashout::class
         ];
     }
 
