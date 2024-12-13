@@ -108,16 +108,22 @@ class championshipController extends AbstractController
                     ];
                 }
 
-                foreach ([$this->allPlayers[$i], $this->allPlayers[$j]] as $player) {
-                    // Counting, sadly, has to be done here since history needs to be reset
-                    $className = get_class($player);
-                    if (isset($this->scoresByStrategy[$className])) {
-                        $this->scoresByStrategy[$className] += $player->getScore() - $p1LastMatchScore;
-                        $this->playerTypesCount[$className] += $this->roundCount;
-                    } else {
-                        $this->scoresByStrategy[$className] = $player->getScore() - $p2LastMatchScore;
-                        $this->playerTypesCount[$className] = $this->roundCount;
-                    }
+                $className = get_class($this->allPlayers[$i]);
+                if (isset($this->scoresByStrategy[$className])) {
+                    $this->scoresByStrategy[$className] += $this->allPlayers[$i]->getScore() - $p1LastMatchScore;
+                    $this->playerTypesCount[$className] += $this->roundCount;
+                } else {
+                    $this->scoresByStrategy[$className] = $this->allPlayers[$i]->getScore() - $p1LastMatchScore;
+                    $this->playerTypesCount[$className] = $this->roundCount;
+                }
+
+                $className = get_class($this->allPlayers[$j]);
+                if (isset($this->scoresByStrategy[$className])) {
+                    $this->scoresByStrategy[$className] += $this->allPlayers[$j]->getScore() - $p2LastMatchScore;
+                    $this->playerTypesCount[$className] += $this->roundCount;
+                } else {
+                    $this->scoresByStrategy[$className] = $this->allPlayers[$j]->getScore() - $p2LastMatchScore;
+                    $this->playerTypesCount[$className] = $this->roundCount;
                 }
 
                 $this->allPlayers[$i]->resetHistory();
