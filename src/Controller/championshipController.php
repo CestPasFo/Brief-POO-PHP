@@ -12,6 +12,7 @@ use App\Entity\PlayerCopyCat;
 use App\Entity\PlayerRandomBullshitGo;
 use App\Entity\PlayerGrudge;
 use App\Entity\PlayerDetective;
+use App\Entity\PlayerForgivingCopycat;
 
 class championshipController extends AbstractController
 {
@@ -59,7 +60,8 @@ class championshipController extends AbstractController
             PlayerCopyCat::class,
             PlayerRandomBullshitGo::class,
             PlayerGrudge::class,
-            PlayerDetective::class
+            PlayerDetective::class,
+            PlayerForgivingCopycat::class
         ];
     }
 
