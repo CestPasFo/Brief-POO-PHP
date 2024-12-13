@@ -115,6 +115,8 @@ class championshipController extends AbstractController
                     $this->matches[] = [
                         'player1' => $p1Name,
                         'player2' => $p2Name,
+                        'p1Choice' => $p1Choice ? "O" : "X",
+                        'p2Choice' => $p2Choice ? "O" : "X",
                         'result' => [
                             'player1Score' => $p1Score,
                             'player2Score' => $p2Score
