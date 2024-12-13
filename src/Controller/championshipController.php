@@ -16,6 +16,7 @@ use App\Entity\PlayerForgivingCopycat;
 use App\Entity\PlayerDumDum;
 use App\Entity\PlayerParanoid;
 use App\Entity\PlayerCashout;
+use App\Entity\PlayerOopsAccident;
 
 class championshipController extends AbstractController
 {
@@ -67,7 +68,8 @@ class championshipController extends AbstractController
             PlayerForgivingCopycat::class,
             PlayerDumDum::class,
             PlayerParanoid::class,
-            PlayerCashout::class
+            PlayerCashout::class,
+            PlayerOopsAccident::class
         ];
     }
 
