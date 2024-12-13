@@ -61,9 +61,10 @@ class championshipController extends AbstractController
             $this->allPlayers[] = new $class();
         }
 
-        for ($iteration = 0; $iteration < 10; $iteration++) {
-            for ($i = 0; $i < count($this->allPlayers); $i++) {
-                for ($j = $i + 1; $j < count($this->allPlayers); $j++) {
+        
+        for ($i = 0; $i < count($this->allPlayers); $i++) {
+            for ($j = $i + 1; $j < count($this->allPlayers); $j++) {
+                for ($iteration = 0; $iteration < 10; $iteration++) {
                     $this->allPlayers[$i]->attack();
                     $this->allPlayers[$j]->attack();
 
