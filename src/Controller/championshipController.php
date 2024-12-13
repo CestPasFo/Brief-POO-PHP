@@ -106,10 +106,10 @@ class championshipController extends AbstractController
             $className = get_class($player);
             if (isset($this->scoresByStrategy[$className])) {
                 $this->scoresByStrategy[$className] += $player->getScore();
-                $this->playerTypesCount[$className] += 1;
+                $this->playerTypesCount[$className] += count($player->getHistory());
             } else {
                 $this->scoresByStrategy[$className] = $player->getScore();
-                $this->playerTypesCount[$className] = 1;
+                $this->playerTypesCount[$className] = count($player->getHistory());
             }
         }
         
