@@ -13,6 +13,10 @@ use App\Entity\PlayerRandomBullshitGo;
 
 class championshipController extends AbstractController
 {
+    // "Config"
+    private $roundCount = 10;
+
+    // Variables
     private $matchSolver;
     private $allTypes = [];
     private $allPlayers = [];
@@ -64,21 +68,36 @@ class championshipController extends AbstractController
         
         for ($i = 0; $i < count($this->allPlayers); $i++) {
             for ($j = $i + 1; $j < count($this->allPlayers); $j++) {
-                for ($iteration = 0; $iteration < 10; $iteration++) {
+                // Begin match
+                for ($iteration = 0; $iteration < $this->roundCount; $iteration++) {
                     $this->allPlayers[$i]->attack();
                     $this->allPlayers[$j]->attack();
 
+                    $p1LastScore = $this->allPlayers[$i]->getScore();
+                    $p2LastScore = $this->allPlayers[$j]->getScore();
+
+
                     $this->matchSolver->matchSolver($this->allPlayers[$i], $this->allPlayers[$j], $iteration);
+
+
+                    $p1Score = $this->allPlayers[$i]->getScore();
+                    $p2Score = $this->allPlayers[$j]->getScore();
+                    $p1Choice = $this->allPlayers[$i]->getCurrentAttack();
+                    $p2Choice = $this->allPlayers[$j]->getCurrentAttack();
+
+                    $p1Choice ? $this->sumCooperates += $p1Score - $p1LastScore : $this->sumCheats += $p1Score - $p1LastScore;
+                    $p2Choice ? $this->sumCooperates += $p2Score - $p2LastScore : $this->sumCheats += $p2Score - $p2LastScore;
+
                     
                     $this->matches[] = [
                         'player1' => get_class($this->allPlayers[$i]),
                         'player2' => get_class($this->allPlayers[$j]),
                         'result' => [
-                            'player1Score' => $this->allPlayers[$i]->getScore(),
-                            'player2Score' => $this->allPlayers[$j]->getScore()
+                            'player1Score' => $p1Score,
+                            'player2Score' => $p2Score
                         ],
                         'iteration' => $iteration
-                    ];                    
+                    ];
                 }
             }
         }
@@ -87,23 +106,6 @@ class championshipController extends AbstractController
     private function setStats()
     {
         foreach ($this->allPlayers as $player) {
-            $last_score = null;
-
-            foreach ($player->getHistory() as $round) {
-                $toAdd = $round["score"];
-                if ($last_score !== null) {
-                    $toAdd -= $last_score;
-                }
-                
-                if ($round["choice"]) {
-                    $this->sumCooperates += $toAdd;
-                } else {
-                    $this->sumCheats += $toAdd;
-                }
-
-                $last_score = $round["score"];
-            }
-
             $className = get_class($player);
             if (isset($this->scoresByStrategy[$className])) {
                 $this->scoresByStrategy[$className] += $player->getScore();
